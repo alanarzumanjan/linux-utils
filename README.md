@@ -12,4 +12,6 @@
     - Docker aliases
     - Music play aliases
     - All System update aliases 
+    - VPN on alias
+    - Environments configuration
     - Openclaw config
