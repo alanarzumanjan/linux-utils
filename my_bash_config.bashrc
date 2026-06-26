@@ -25,6 +25,15 @@ alias editbash='nano ~/.bashrc && source ~/.bashrc && echo -e "\e[32mbashrc relo
 alias c='clear'
 alias ga='git add .'
 
+# MPV music control
+alias play='mpv ~/Media/Music/Phonks --shuffle --no-video \
+--input-ipc-server=/tmp/mpv-socket \
+>/dev/null 2>&1 & disown'
+alias next='echo "playlist-next" | socat - /tmp/mpv-socket'
+alias prev='echo "playlist-prev" | socat - /tmp/mpv-socket'
+alias pause='echo "cycle pause" | socat - /tmp/mpv-socket'
+alias mstop='killall mpv'
+
 # History
 HISTSIZE=50000
 HISTFILESIZE=500000
@@ -45,8 +54,13 @@ alias up='update'
 alias download='sudo pacman -S'
 
 # Docker alias
-alias dockon='sudo systemctl start docker.socket docker.service && docker info --format "{{.ServerVersion}}" && echo "docker: up"'
-alias dockoff='sudo systemctl stop docker.service docker.socket && echo "docker: down"'
+alias docon='sudo systemctl start docker.socket docker.service && docker info --format "{{.ServerVersion}}" && echo "docker: up"'
+alias docoff='sudo systemctl stop docker.service docker.socket && echo "docker: down"'
+alias docclean='containers=$(docker ps -aq); [ -n "$containers" ] && docker stop $containers && docker rm -f $containers; images=$(docker images -aq); [ -n "$images" ] && docker rmi -f $images; docker system prune -a --volumes -f'
+alias docrun='docclean && docker compose build --no-cache && docker compose up -d'
+
+# Open Russian VPN
+alias rus_vpn='sudo openvpn --config /home/alan/Documents/servers/vpn696556713.opengw.net_ddns_udp.ovpn'
 
 # Status alias
 alias vpnstatus='systemctl --user status protonvpn-autoconnect.service'
@@ -97,9 +111,53 @@ update() {
       echo -e "\e[32mno orphans found\e[0m"
     fi
   fi
+ if command -v flatpak >/dev/null 2>&1; then
+    echo -e "\e[36m==> flatpak update\e[0m"
+    flatpak update -y || echo -e "\e[31mflatpak update failed\e[0m"
+  else
+    echo -e "\e[33mflatpak not installed\e[0m"
+  fi
 
   echo -e "\e[32mupdate done\e[0m"
 }
 
 # Enable color for ls
 eval "$(dircolors -b)"
+export PATH="$PATH:$HOME/.dotnet/tools"
+export PATH="$PATH:$HOME/flutter/bin"
+
+export PATH=$PATH:/usr/local/go/bin
+export ARDUINO_DIRECTORIES_DATA=/data/.arduino15
+
+# Android SDK paths
+export ANDROID_HOME=/data/Android/Sdk
+export ANDROID_SDK_ROOT=/data/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools
+
+# Go paths
+export GOPATH=/data/go
+export PATH=$PATH:$GOPATH/bin
+
+# Dev tools paths (moved to /data)
+export ARDUINO_DIRECTORIES_DATA=/data/.arduino15
+export ANDROID_HOME=/data/Android/Sdk
+export ANDROID_SDK_ROOT=/data/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools
+export PATH="$PATH:/data/flutter/bin"
+export GOPATH=/data/go
+export PATH=$PATH:$GOPATH/bin
+export CHROME_EXECUTABLE=/usr/bin/chromium
+
+. "$HOME/.local/bin/env"
+alias interpreter="source ~/oi-venv/bin/activate 2>/dev/null && interpreter -y"
+alias interpreter="source ~/oi-venv/bin/activate 2>/dev/null && interpreter -y"
+alias interpreter="source ~/oi-venv/bin/activate 2>/dev/null && interpreter -y"
+
+# OpenClaw Completion
+source "/home/alan/.openclaw/completions/openclaw.bash"
+export PATH="$HOME:$PATH"
+export PATH="$HOME:$PATH"
+export OPENCLAW_AUTH_TOKEN=""
+
+# NPM global bin (added by Qwen Code installer)
+export PATH="$HOME/.npm-global/bin:$PATH"
